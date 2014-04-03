@@ -3,8 +3,10 @@ phpmvc
 
 PHP MVC Framework
 
+###Exemplo de implementação do Controller
+
 ```php
-<?php
+
 namespace ProjetoExemplo\Controllers;
 
 use ProjetoExemplo\Domain\Customer;
@@ -57,5 +59,59 @@ class HomeController extends Controller
         return $this->RedirectToAction('index', 'home');
     }
 }
-?>
+
+```
+
+###Exemplo de modelo
+```php
+
+namespace ProjetoExemplo\Models;
+
+/**
+ * Description of RegisterModel
+ *
+ * @author Edgar
+ */
+class RegisterModel
+{
+    /**
+     * #\System\DataAnnotations\Display('Primeiro Nome')
+     * #\System\DataAnnotations\Required('O primeiro nome deve ser preenchido')
+     * @var string
+     */
+    public $firstName;
+    
+    /**
+     * #\System\DataAnnotations\Display('Segundo Nome')
+     * #\System\DataAnnotations\Required('O último nome deve ser preenchido')
+     * @var string
+     */
+    public $lastName;
+    
+    /**
+     * #\System\DataAnnotations\Required('O e-mail deve ser preenchido')
+     * #\System\DataAnnotations\Remote('validateEmail', 'account', '', 'E-mail já foi cadastrado')
+     * @var string
+     */
+    public $email;
+    
+    /**
+     * #\System\DataAnnotations\Required('O e-mail deve ser confirmado')
+     * @var string
+     */
+    public $emailConfirm;
+    
+    /**
+     * #\System\DataAnnotations\Required('A senha deve ser preenchida')
+     * @var string
+     */
+    public $password;
+    
+    /**
+     * #\System\DataAnnotations\Required('A senha deve ser comfirmada')
+     * @var string
+     */
+    public $passwordConfirm;
+}
+
 ```
