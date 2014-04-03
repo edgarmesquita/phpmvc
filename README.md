@@ -7,18 +7,18 @@ PHP MVC Framework
 
 ###Estrutura de pastas
 
-* Areas **_(opcional)_**
-  - Exemplo **_(nome da área)_**
-    * Controllers
-    * Models
-    * Views
-* Content **_(imagens, css e javascript)_**
-* Controllers 
-* Models
-* Views
-* MvcApplication.php
-* config.xml
-* index.php
+* ![](https://cdn1.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/16x16/folder.png) Areas **_(opcional)_**
+  - ![](https://cdn1.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/16x16/folder.png) Exemplo **_(nome da área)_**
+    * ![](https://cdn1.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/16x16/folder.png) Controllers
+    * ![](https://cdn1.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/16x16/folder.png) Models
+    * ![](https://cdn1.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/16x16/folder.png) Views
+* ![](https://cdn1.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/16x16/folder.png) Content **_(imagens, css e javascript)_**
+* ![](https://cdn1.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/16x16/folder.png) Controllers 
+* ![](https://cdn1.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/16x16/folder.png) Models
+* ![](https://cdn1.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/16x16/folder.png) Views
+* ![](https://cdn1.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/16x16/attibutes.png) MvcApplication.php
+* ![](https://cdn1.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/16x16/attibutes.png) config.xml
+* ![](https://cdn1.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/16x16/attibutes.png) index.php
 
 
 ####MvcApplication.php
