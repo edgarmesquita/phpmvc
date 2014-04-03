@@ -115,3 +115,44 @@ class RegisterModel
 }
 
 ```
+
+###Exemplo de View
+
+```tpl
+
+<form id="form1" name="form1" method="post" action="{$Url->Action("register", "home")}">
+    <p class="txtnome">
+        {$Html->TextBoxFor("firstName", null, [["placeholder","Seu primeiro Nome"]])}
+        {$Html->ValidationMessageFor("firstName")}
+    </p>
+    <p class="txtsobrenome">
+        {$Html->TextBoxFor("lastName", null, [["placeholder","Seu segundo Nome"]])}
+        {$Html->ValidationMessageFor("lastName")}
+    </p>
+    <p class="txtemail">
+        {$Html->TextBoxFor("email", null, [["placeholder","Seu e-mail"]])}
+        {$Html->ValidationMessageFor("email")}
+    </p>
+    <p class="txtrepitaemail">
+        {$Html->TextBoxFor("emailConfirm", null, [["placeholder","Confirme seu e-mail"]])}
+        {$Html->ValidationMessageFor("emailConfirm")}
+    </p>
+    <p class="txtsenha">
+        {$Html->TextBoxFor("password", null, [["placeholder","Sua senha"]])}
+        {$Html->ValidationMessageFor("password")}
+    </p>
+    <p class="txtrepitasenha">
+        {$Html->TextBoxFor("passwordConfirm", null, [["placeholder","Confirme sua senha"]])}
+        {$Html->ValidationMessageFor("passwordConfirm")}
+    </p>
+    <p></p><hr></hr>
+    <p class="botao">
+        <input type="submit" value="Confirmar Cadastro" />
+    </p>
+    <p class="termo">
+        Clicando no botão <strong>Cadastrar</strong>, você estará cofirmando o aceite dos
+        <a href="#">Termos de uso</a>.
+    </p>
+</form>
+
+```
