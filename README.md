@@ -1,7 +1,102 @@
-phpmvc
+PHP MVC Framework
 ======
 
 PHP MVC Framework
+
+##Instalação
+
+###Estrutura de pastas
+
+* Areas **_(opcional)_**
+  - Exemplo **_(nome da área)_**
+    * Controllers
+    * Models
+    * Views
+* Content **_(imagens, css e javascript)_**
+* Controllers 
+* Models
+* Views
+* MvcApplication.php
+* config.xml
+* index.php
+
+
+####MvcApplication.php
+
+```php
+namespace ProjetoExemplo;
+
+/**
+ * Description of MvcApplication
+ *
+ * @author Edgar Mesquita
+ */
+class MvcApplication extends \System\Web\HttpApplication
+{
+    public function Start()
+    {
+        \ActiveRecord\Config::initialize(function($cfg)
+        {
+            $connectionStrings = \System\Configuration\ConfigurationManager::ConnectionStrings();
+            $cfg->set_model_directory( MVC_ROOT_PATH . 'Domain');
+            $cfg->set_connections(array(
+                'Development' => $connectionStrings["DefaultDb"],
+                'Production' => $connectionStrings["DefaultDb"]
+            ));
+            $cfg->set_default_connection('Production');
+        });
+        \System\Mvc\AreaRegistration::RegisterAllAreas();
+        self::RegisterRoutes(\System\Routing\RouteTable::GetRoutes());
+    }
+    
+    public static function RegisterRoutes(\System\Routing\RouteCollection $routes)
+    {
+        $routes->MapRoute(
+                "Default",
+                "{controller}/{action}/{id}",
+                array(
+                    "controller"=>"home",
+                    "action"=>"index",
+                    "id" => \System\Mvc\UrlParameter::GetOptional()
+                )
+        );
+        $routes->MapRoute(
+                "HomeDefault",
+                "{action}/{id}",
+                array(
+                    "controller"=>"home",
+                    "action"=>"index",
+                    "id" => \System\Mvc\UrlParameter::GetOptional()
+                )
+        );
+        
+    }
+}
+```
+
+####config.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <application namespace="ProjetoExemplo" inherits="ProjetoExemplo\MvcApplication" />
+    <appSettings>
+        <add key="Email" value="contato@projetoexemplo.com" />
+    </appSettings>
+    <connectionStrings>
+        <add name="DefaultDb" connectionString="mysql://usuario:senha@mysql.projetoexemplo.com/projetoexemplo;charset=utf8" />
+    </connectionStrings>
+    <authentication loginUrl="~/admin/account/login" timeout="2880" />
+</configuration>
+```
+
+####index.php
+
+```php
+require_once 'System/Application.php';
+$app = new \System\Application();
+$app->Start();
+```
 
 ###Exemplo de implementação do Controller
 
@@ -116,7 +211,7 @@ class RegisterModel
 
 ```
 
-###Exemplo de View
+###Exemplo de implementação da View
 
 ```tpl
 
