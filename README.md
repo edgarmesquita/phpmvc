@@ -4,6 +4,7 @@ phpmvc
 PHP MVC Framework
 
 ```php
+<?php
 namespace ProjetoExemplo\Controllers;
 
 use ProjetoExemplo\Domain\Customer;
