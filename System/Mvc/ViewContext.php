@@ -14,6 +14,10 @@ class ViewContext extends ControllerContext
         parent::__construct($controllerContext->RequestContext, $controllerContext->Controller);
     }
     
+    /**
+     * 
+     * @return ViewDataDictionary
+     */
     public function GetViewData()
     {
         return $this->_viewData;

@@ -12,5 +12,9 @@ class DisplayAttribute extends \System\Attribute
     {
         $this->_name = $name;
     }
+    
+    public function GetName()
+    {
+        return $this->_name;
+    }
 }
-?>

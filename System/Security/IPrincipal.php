@@ -11,4 +11,3 @@ interface IPrincipal
     function GetIdentity();
     function SetIdentity(Identity $value);
 }
-?>

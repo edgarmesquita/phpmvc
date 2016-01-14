@@ -1,20 +1,15 @@
 <?php
 namespace System\Mvc;
+
+use System\Web\WebPageRenderingBase;
+
 /**
  * Description of ViewResultBase
  *
  * @author Edgar
  */
 abstract class ViewResultBase extends ActionResult
-{
-    private $smarty;
-    
-    /**
-     *
-     * @var object
-     */
-    private $model;
-    
+{    
     /**
      *
      * @var string
@@ -28,12 +23,18 @@ abstract class ViewResultBase extends ActionResult
     private $_viewData;
     
     /**
+     *
+     * @var IView
+     */
+    private $_view;
+    
+    /**
      * Gets the view data model.
      * @return object The view data model.
      */
     public function GetModel()
     {
-        return $this->model;
+        return $this->_viewData->GetModel();
     }
     
     /**
@@ -63,18 +64,19 @@ abstract class ViewResultBase extends ActionResult
         return $this->_viewData;
     }
     
-    public function ExecuteResult(ControllerContext $context)
+    /**
+     * @return IView
+     */
+    public function GetView()
     {
-        $this->smarty->assign('Html', new HtmlHelper($this->model));
-        try
-        {
-            $tpl = ucfirst( $_REQUEST['controller'] ) ."/{$this->ViewName}.tpl";
-            $this->smarty->display($tpl);
-        }
-        catch (\Exception $e) {
-            
-            $this->smarty->display('Shared/error.tpl');
-        }
+        return $this->_view;
+    }
+    
+    public function ExecuteResult(ControllerContext $context)
+    {       
+        $tpl = ucfirst( $_REQUEST['controller'] ) ."/{$this->ViewName}.tpl";
+        $this->_view = new SmartyView($context, $tpl, null);
+        $this->_view->Render(new ViewContext($context, $this->_viewData));
     }
     
     public abstract function FindView(ControllerContext $context);
@@ -82,14 +84,8 @@ abstract class ViewResultBase extends ActionResult
     protected function __construct()
     {
         parent::__construct();
-        
-        $this->smarty = new \Smarty();
-        //$this->smarty->setTemplateDir($area);
-        $this->smarty->setCompileDir('System/Runtime/Compile');
-        $this->smarty->setConfigDir('System/Runtime/Configs');
-        $this->smarty->setCacheDir('System/Runtime/Cache');
-        
         $this->_viewData = new ViewDataDictionary();
+        
     }
 }
 ?>

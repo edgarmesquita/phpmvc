@@ -1,8 +1,8 @@
 <?php
 namespace System;
-
 define("MVC_SYSTEM_PATH", dirname(__FILE__) . DIRECTORY_SEPARATOR);
 define("MVC_ROOT_PATH", dirname($_SERVER["SCRIPT_FILENAME"]) . DIRECTORY_SEPARATOR);
+//define("PHP_VERSION", phpversion());
 
 require_once MVC_SYSTEM_PATH . 'Vendor/smarty/Smarty.class.php';
 require_once MVC_SYSTEM_PATH . 'Vendor/phpmailer/class.phpmailer.php';
@@ -59,12 +59,12 @@ class Application
                     if (substr($class, 0, strlen($namespace)) == $namespace)
                     {
                         $path = str_replace($namespace . "\\", "", $class);
-                        require_once MVC_ROOT_PATH . str_replace("\\", DIRECTORY_SEPARATOR, $path) . ".php";
+                        @include_once MVC_ROOT_PATH . str_replace("\\", DIRECTORY_SEPARATOR, $path) . ".php";
                     }
                     if (substr($class, 0, 6) == "System")
                     {
                         $path = str_replace("System\\", "", $class);
-                        require_once MVC_SYSTEM_PATH . str_replace("\\", DIRECTORY_SEPARATOR, $path) . ".php";
+                        @include_once MVC_SYSTEM_PATH . str_replace("\\", DIRECTORY_SEPARATOR, $path) . ".php";
                     }
                     spl_autoload_extensions(".php,.class.php,.inc.php");
                     spl_autoload($class);
@@ -171,7 +171,7 @@ class Application
             {
                 preg_match("'\{(.*?)\}'si", $m, $matches);
 
-                //É uma variável
+                //Ã‰ uma variÃ¡vel
                 if (count($matches) > 1)
                 {
                     $key = $matches[1];
@@ -181,7 +181,7 @@ class Application
                     {
                         $params[$key] = $r[$i];
                     }
-                    //encontrou nos valores padrões
+                    //encontrou nos valores padrï¿½es
                     elseif (array_key_exists($key, $defaults))
                     {
                         $params[$key] = $defaults[$key];
@@ -191,7 +191,7 @@ class Application
                         break;
                     }
                 }
-                //É um texto
+                //Ã‰ um texto
                 elseif (empty($r[$i]) || $m != $r[$i])
                 {
                     break;
@@ -255,6 +255,7 @@ class Application
                     {
                         $resultEx = $ex;
                     }
+                    //print_r($resultEx) ; exit();
                     
                     $actionExecutedContext = new Mvc\ActionExecutedContext($this->_controllerContext, $actionDescriptor, false, $resultEx);
                     $actionExecutedContext->Result = $actionResult;
@@ -265,10 +266,9 @@ class Application
                     {
                         if ($actionResult instanceof Mvc\ActionResult)
                             $actionResult->ExecuteResult($this->_controllerContext);
-                        else
-                            echo $actionResult;
+                        else echo $actionResult;
                     }
-
+                    else if(isset($resultEx)) $this->RenderExceptionError($resultEx);
                     
                 }
                 else

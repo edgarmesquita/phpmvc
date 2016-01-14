@@ -163,13 +163,19 @@ class Controller extends ControllerBase
      * @param object $model
      * @return \System\Mvc\ViewResult
      */
-    public function View($template, $model = null)
+    public function View($template = '', $model = null)
     {
+        if(!is_string($template) && !isset($model))
+        {
+            $model = $template;
+            $template = '';
+        }
+        
         $viewResult = new ViewResult();
-        $viewResult->ViewName = empty($template) ? $_REQUEST['page'] : $template;
+        $viewResult->ViewName = empty($template) ? $_REQUEST['action'] : $template;
 
         if (empty($template))
-            $template = $_REQUEST['page'];
+            $template = $_REQUEST['action'];
 
         $this->GetViewData()->SetModel($model);
         $viewContext = new ViewContext($this->ControllerContext);

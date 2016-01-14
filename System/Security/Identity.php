@@ -30,4 +30,3 @@ class Identity extends \System\Object
         $this->_name = $value;
     }
 }
-?>

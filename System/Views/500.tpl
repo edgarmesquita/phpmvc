@@ -27,7 +27,7 @@
     <body bgcolor="white">
 
         <span><H1>Erro Interno de Servidor<hr width="100%" size="1" color="silver" /></H1>
-            <h2> <i>{$exception->getMessage()}</i> </h2></span>
+            <h2> <i>{$Exception->getMessage()}</i> </h2></span>
         <font face="Arial, Helvetica, Geneva, SunSans-Regular, sans-serif ">
 
             <b> Description: </b> ...
@@ -37,7 +37,7 @@
 
             <hr width="100%" size="1" color="silver" />
 
-            <b>Version Information:</b>&nbsp;PHP MVC Framework Version:1.0; PHP Version:{phpversion()}
+            <b>Version Information:</b>&nbsp;PHP MVC Framework Version:1.0; PHP Version:{$smarty.const.PHP_VERSION}
 
             </font>
 

@@ -54,6 +54,19 @@ class HtmlHelper
         return "</form>";
     }
     
+    public function Label($name, $text=null)
+    {
+        $attributes = array("for" => $name);
+        if(!isset($text)) $text = $name;
+        
+        return $this->RenderElement("label", $attributes, $text);
+    }
+    
+    public function LabelFor($property)
+    {
+        $annotation = $this->GetDataAnnotationAttribute("Display", $property);
+        return $this->Label($property, $annotation->Name);
+    }
     /**
      * 
      * @param string $name
@@ -334,14 +347,16 @@ class HtmlHelper
     {
         $p = $this->_reflector->getProperty($property);
         $doc = $p->getDocComment();
-        if (preg_match("/#{$attribute}\('(.*)'\)/", $doc, $matches))
+        
+        if (preg_match("/#(.*){$attribute}\((.*)\)/", $doc, $matches))
         {
-            $attributeClass = $matches[1] . "Attribute";
+            $attributeClass = $matches[1] . $attribute . "Attribute";
             $params = explode(",", $matches[2]);
             for ($i = 0; $i < count($params); $i++)
             {
                 $params[$i] = trim(preg_replace("/['|\"](.*)['|\"]/", "$1", $params[$i]));
             }
+            
             if (class_exists($attributeClass))
             {
                 $reflectionClass = new \ReflectionClass($attributeClass);
