@@ -24,4 +24,3 @@ class EmptyResult extends ActionResult
         
     }
 }
-?>

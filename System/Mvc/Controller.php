@@ -185,6 +185,8 @@ class Controller extends ControllerBase
         $this->smarty->assignByRef('User', $this->_user);
         $this->smarty->assignByRef('ViewData', $this->GetViewData());
         $this->smarty->assignByRef('Url', $this->_url);
+        
+        
         $this->smarty->assignByRef('Html', new HtmlHelper($viewContext));
 
         //try

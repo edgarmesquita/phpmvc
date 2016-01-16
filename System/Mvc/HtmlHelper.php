@@ -1,5 +1,9 @@
 <?php
 namespace System\Mvc;
+use System\Mvc\ViewContext;
+use System\Mvc\ViewDataDictionary;
+use System\Mvc\UrlHelper;
+use System\Mvc\SelectListItem;
 
 /**
  * Representa o suporte para a renderização de controles HTML
@@ -13,24 +17,27 @@ class HtmlHelper
     private $_model;
     private $_reflector;
     private $_viewContext;
-    
-    
+
     /**
      * 
      * @param \System\Mvc\ViewContext $viewContext
      */
-    public function __construct(\System\Mvc\ViewContext $viewContext)
+    public function __construct(ViewContext $viewContext)
     {
         if ($viewContext != null)
         {
             $this->_viewContext = $viewContext;
             $this->_model = $viewContext->ViewData->GetModel();
-            
-            if($this->_model != null)
+
+            if ($this->_model != null)
             {
-                if(!is_array($this->_model))
+                if (!is_array($this->_model))
                     $this->_reflector = new \ReflectionClass($this->_model);
-                else $this->_reflector = new \ReflectionClass($this->_model[0]);
+                else
+                {
+                    $m = $this->_model[0];
+                    if(isset($m)) $this->_reflector = new \ReflectionClass($m);
+                }
             }
         }
 
@@ -39,34 +46,38 @@ class HtmlHelper
         $this->root = implode("/", $arr);
     }
 
-    public function BeginForm($actionName="", $controllerName="", $routeValues = array(), $method="POST", $htmlAttributes = array())
+    public function BeginForm($actionName = "", $controllerName = "", $routeValues = array(), $method = "POST", $htmlAttributes = array())
     {
         $url = new UrlHelper();
         $attributes = array();
-        if(isset($actionName) && !empty($actionName)) $attributes["action"] = $url->Action ($actionName, $controllerName, $routeValues);
-        if(isset($method) && !empty($method)) $attributes["method"] = $method;
-        
+        if (isset($actionName) && !empty($actionName))
+            $attributes["action"] = $url->Action($actionName, $controllerName, $routeValues);
+        if (isset($method) && !empty($method))
+            $attributes["method"] = $method;
+
         return $this->RenderElement("form", array_merge($attributes, $htmlAttributes), null, true);
     }
-    
+
     public function EndForm()
     {
         return "</form>";
     }
-    
-    public function Label($name, $text=null)
+
+    public function Label($name, $text = null)
     {
         $attributes = array("for" => $name);
-        if(!isset($text)) $text = $name;
-        
+        if (!isset($text))
+            $text = $name;
+
         return $this->RenderElement("label", $attributes, $text);
     }
-    
+
     public function LabelFor($property)
     {
         $annotation = $this->GetDataAnnotationAttribute("Display", $property);
         return $this->Label($property, $annotation->Name);
     }
+
     /**
      * 
      * @param string $name
@@ -130,8 +141,7 @@ class HtmlHelper
     public function TextBoxFor($property, $format = null, $htmlAttributes = array())
     {
         return $this->TextBox(
-            $property, $this->ValueToString($this->_model->$property, $format),
-            array_merge($htmlAttributes, $this->GetDataAnnotationValidationAttributes($property))
+                        $property, $this->ValueToString($this->_model->$property, $format), array_merge($htmlAttributes, $this->GetDataAnnotationValidationAttributes($property))
         );
     }
 
@@ -144,14 +154,14 @@ class HtmlHelper
         );
         return $this->RenderElement("input", array_merge($attributes, $htmlAttributes));
     }
-    
+
     public function PasswordFor($property, $htmlAttributes = array())
     {
         return $this->Password(
-            $property, $this->_model->$property, array_merge($htmlAttributes, $this->GetDataAnnotationValidationAttributes($property))
+                        $property, $this->_model->$property, array_merge($htmlAttributes, $this->GetDataAnnotationValidationAttributes($property))
         );
     }
-    
+
     public function Hidden($name, $value, $htmlAttributes = array())
     {
         $attributes = array(
@@ -161,72 +171,74 @@ class HtmlHelper
         );
         return $this->RenderElement("input", array_merge($attributes, $htmlAttributes));
     }
-    
+
     public function HiddenFor($property, $htmlAttributes = array())
     {
         return $this->Hidden(
-            $property, $this->_model->$property, array_merge($htmlAttributes, $this->GetDataAnnotationValidationAttributes($property))
+                        $property, $this->_model->$property, array_merge($htmlAttributes, $this->GetDataAnnotationValidationAttributes($property))
         );
     }
-    
+
     public function RadioButton($name, $value, $isChecked, $htmlAttributes = array())
-    {       
+    {
         $attributes = array(
             "type" => "radio",
             "name" => $name,
             "value" => $this->ValueToString($value)
         );
-        if($isChecked) $attributes["checked"] = "checked";
-        
+        if ($isChecked)
+            $attributes["checked"] = "checked";
+
         return $this->RenderElement("input", array_merge($attributes, $htmlAttributes));
     }
-    
+
     public function RadioButtonFor($property, $value, $htmlAttributes = array())
     {
         $isChecked = ($this->_model != null && isset($this->_model->$property) && $this->_model->$property == $value);
         return $this->RadioButton(
-            $property, $value, $isChecked, array_merge($htmlAttributes, $this->GetDataAnnotationValidationAttributes($property))
+                        $property, $value, $isChecked, array_merge($htmlAttributes, $this->GetDataAnnotationValidationAttributes($property))
         );
     }
-    
+
     public function CheckBox($name, $value, $isChecked, $htmlAttributes = array())
-    {        
+    {
         $attributes = array(
             "type" => "checkbox",
             "name" => $name,
             "value" => $this->ValueToString($value)
         );
-        if($isChecked) $attributes["checked"] = "checked";
-        
+        if ($isChecked)
+            $attributes["checked"] = "checked";
+
         return $this->RenderElement("input", array_merge($attributes, $htmlAttributes));
     }
-    
+
     public function CheckBoxFor($property, $value, $htmlAttributes = array())
     {
         $isChecked = ($this->_model != null && isset($this->_model->$property) && $this->_model->$property == $value);
         return $this->CheckBox(
-            $property, $value, $isChecked, array_merge($htmlAttributes, $this->GetDataAnnotationValidationAttributes($property))
+                        $property, $value, $isChecked, array_merge($htmlAttributes, $this->GetDataAnnotationValidationAttributes($property))
         );
     }
-    
+
     public function DropDownList($name, $selectList, $optionLabel = null, $htmlAttributes = array())
     {
         $attributes = array(
             "name" => $name
         );
         $options = "";
-        
-        if(isset($optionLabel))
+
+        if (isset($optionLabel))
             $options .= $this->RenderElement("option", array("value" => ""), $optionLabel);
-        
+
         $value = null;
-        
-        if(isset($this->_model))
+
+        if (isset($this->_model))
         {
             $prop = preg_replace("/\[([a-zA-Z]+)\]/", "['$1']", $name);
             eval("\$value = \$this->_model->$prop;");
         }
-        
+
         foreach ($selectList as $item)
         {
             $attrs = array();
@@ -236,18 +248,20 @@ class HtmlHelper
             {
                 $attrs["value"] = $item[0];
                 $text = $item[1];
-            }
-            else if($item instanceof SelectListItem)
+            } else if ($item instanceof SelectListItem)
             {
                 $attrs["value"] = $item->Value;
                 $text = $item->Text;
-                
-                if(isset($value) && $item->Value == $value) $attrs["selected"] = "selected";
-                else{
-                    if($item->Selected) $attrs["selected"] = "selected";
+
+                if (isset($value) && $item->Value == $value)
+                    $attrs["selected"] = "selected";
+                else
+                {
+                    if ($item->Selected)
+                        $attrs["selected"] = "selected";
                 }
             }
-            
+
             $options .= $this->RenderElement("option", $attrs, $text);
         }
         return $this->RenderElement("select", array_merge($attributes, $htmlAttributes), $options);
@@ -264,7 +278,7 @@ class HtmlHelper
                     "class" => "field-validation-valid",
                     "data-valmsg-replace" => "true",
                     "data-valmsg-for" => $name
-                ));
+        ));
     }
 
     /**
@@ -286,43 +300,49 @@ class HtmlHelper
     public function Partial($partialViewName, $model = null, $viewData = array())
     {
         $smarty = new \Smarty();
+
+
         $area = 'Views';
         if (isset($_REQUEST['area']) && !empty($_REQUEST['area']))
-            $area = 'Areas/' . ucfirst ( $_REQUEST['area'] ) . '/Views';
+            $area = 'Areas/' . ucfirst($_REQUEST['area']) . '/Views';
 
         $smarty->setTemplateDir($area);
-        $smarty->setCompileDir(MVC_SYSTEM_PATH .'Runtime/Compile');
-        $smarty->setConfigDir(MVC_SYSTEM_PATH .'Runtime/Configs');
-        $smarty->setCacheDir(MVC_SYSTEM_PATH .'Runtime/Cache');
+        $smarty->setCompileDir(MVC_SYSTEM_PATH . 'Runtime/Compile');
+        $smarty->setConfigDir(MVC_SYSTEM_PATH . 'Runtime/Configs');
+        $smarty->setCacheDir(MVC_SYSTEM_PATH . 'Runtime/Cache');
 
-        if(!isset($model)) $model = $this->_model;
-                
+        if (!isset($model))
+            $model = $this->_model;
+
         $viewDataDictionary = new ViewDataDictionary($model);
-        if(!isset($viewData) || count($viewData) == 0)
+
+
+        if (!isset($viewData) || count($viewData) == 0)
         {
             $vd = $this->_viewContext->GetViewData();
-            foreach($vd as $key => $value)
-                $viewDataDictionary->Add ($key, $value);
+            foreach ($vd as $key => $value)
+                $viewDataDictionary->Add($key, $value);
         }
-        
+
         $viewContext = new ViewContext($this->_viewContext->Controller->ControllerContext);
         $viewContext->ViewData = $viewDataDictionary;
-        
+
         $smarty->assign('Model', $model);
         $smarty->assignByRef('Url', new UrlHelper());
         $smarty->assignByRef('ViewData', $viewDataDictionary);
-        
-        
+
+        //TODO
         $smarty->assignByRef('Html', new HtmlHelper($viewContext));
+
+
 
         try
         {
-            $tpl = ucfirst( $_REQUEST['controller'] ) . "/$partialViewName.tpl";
+            $tpl = ucfirst($_REQUEST['controller']) . "/$partialViewName.tpl";
             if (file_exists(MVC_ROOT_PATH . $area . DIRECTORY_SEPARATOR . $tpl))
             {
                 return $smarty->fetch($tpl);
-            }
-            else
+            } else
             {
                 $tpl = "Shared/$partialViewName.tpl";
                 if (file_exists(MVC_ROOT_PATH . $area . DIRECTORY_SEPARATOR . $tpl))
@@ -330,8 +350,7 @@ class HtmlHelper
                     return $smarty->fetch($tpl);
                 }
             }
-        }
-        catch (Exception $e)
+        } catch (\Exception $e)
         {
             return $smarty->fetch('Shared/error.tpl');
         }
@@ -347,7 +366,7 @@ class HtmlHelper
     {
         $p = $this->_reflector->getProperty($property);
         $doc = $p->getDocComment();
-        
+
         if (preg_match("/#(.*){$attribute}\((.*)\)/", $doc, $matches))
         {
             $attributeClass = $matches[1] . $attribute . "Attribute";
@@ -356,7 +375,7 @@ class HtmlHelper
             {
                 $params[$i] = trim(preg_replace("/['|\"](.*)['|\"]/", "$1", $params[$i]));
             }
-            
+
             if (class_exists($attributeClass))
             {
                 $reflectionClass = new \ReflectionClass($attributeClass);
@@ -425,7 +444,7 @@ class HtmlHelper
                         $i++;
                     }
 
-                    
+
                     $attribute = $reflectionClass->newInstanceArgs($args);
 
                     if (method_exists($attribute, "GetClientValidationRules"))
@@ -439,10 +458,9 @@ class HtmlHelper
                                 $attributes["data-val-" . $rule->ValidationType . "-" . $validationName] = $validationParam;
                             }
                         }
-                    }
-                    else
+                    } else
                     {
-                        $attr = strtolower( end(explode("\\", $matches[1])) );
+                        $attr = strtolower(end(explode("\\", $matches[1])));
                         $attributes["data-val-$attr"] = $attribute->ErrorMessage;
                     }
                 }
@@ -458,7 +476,7 @@ class HtmlHelper
      * @param string $innerHtml Element inner HTML
      * @return string
      */
-    private function RenderElement($name, $attributes, $innerHtml = null, $opened=false)
+    private function RenderElement($name, $attributes, $innerHtml = null, $opened = false)
     {
         $element = "<$name";
         if (isset($attributes) && is_array($attributes))
@@ -467,9 +485,9 @@ class HtmlHelper
             foreach ($attributes as $key => $value)
             {
                 if (is_int($key) && is_array($value))
-                    $element .= " {$value[0]}=\"". $value[1]."\"";
+                    $element .= " {$value[0]}=\"" . $value[1] . "\"";
                 else
-                    $element .= " $key=\"". $value."\"";
+                    $element .= " $key=\"" . $value . "\"";
                 $i++;
             }
         }
@@ -477,23 +495,24 @@ class HtmlHelper
             $element .= ">$innerHtml</$name>";
         else
         {
-            if($opened)$element .= ">";
-            else $element .= " />";
+            if ($opened)
+                $element .= ">";
+            else
+                $element .= " />";
         }
         return $element;
     }
-    
+
     private function ValueToString($object)
     {
-        if($object instanceof \DateTime)
+        if ($object instanceof \DateTime)
             return $object->format("d/m/Y");
-        elseif(is_float($object))
-            return number_format ($object);
-        elseif(is_bool($object))
+        elseif (is_float($object))
+            return number_format($object);
+        elseif (is_bool($object))
             return $object ? "true" : "false";
-        
+
         return $object;
     }
-}
 
-?>
+}
