@@ -67,7 +67,8 @@ class UrlHelper
         if(!$area && isset($_REQUEST["area"]))
             $url = "/{$_REQUEST["area"]}{$url}";
         
-        return $this->root . $url;
+        if(MVC_FRIENDLY_URL) return $this->root . $url;
+        else return $this->root . "/index.php?r=". trim($url, "/");
     }
     /**
      * Converts a virtual (relative) path to an application absolute path.

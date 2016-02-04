@@ -200,6 +200,10 @@ class Controller extends ControllerBase
         //}
     }
 
+    public function PartialView($template = '', $model = null)
+    {
+        return $this->View($template, $model);
+    }
     /**
      * 
      * @param object $obj

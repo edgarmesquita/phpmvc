@@ -14,7 +14,7 @@ class SelectList extends MultiSelectList
      */
     function __construct($items = array(), $dataValueField = "", $dataTextField = "", $selectedValue = null)
     {
-        parent::__construct($items, $dataValueField, $dataTextField, array($selectedValue));
+        parent::__construct($items, $dataValueField, $dataTextField, isset($selectedValue) ? array($selectedValue) : array());
     }
     
     public function GetSelectedValue()

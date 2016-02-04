@@ -13,6 +13,11 @@ class JsonResult extends ActionResult
      */
     private $data;
     
+    public function __construct()
+    {
+        parent::__construct();
+    }
+    
     /**
      * 
      * @return object
@@ -36,4 +41,3 @@ class JsonResult extends ActionResult
         echo json_encode($this->Data);
     }
 }
-?>

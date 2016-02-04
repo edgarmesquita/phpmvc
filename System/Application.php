@@ -1,12 +1,6 @@
 <?php
-namespace System;
-define("MVC_SYSTEM_PATH", dirname(__FILE__) . DIRECTORY_SEPARATOR);
-define("MVC_ROOT_PATH", dirname($_SERVER["SCRIPT_FILENAME"]) . DIRECTORY_SEPARATOR);
-//define("PHP_VERSION", phpversion());
 
-require_once MVC_SYSTEM_PATH . 'Vendor/smarty/Smarty.class.php';
-require_once MVC_SYSTEM_PATH . 'Vendor/phpmailer/class.phpmailer.php';
-require_once MVC_SYSTEM_PATH . 'Vendor/php-activerecord/ActiveRecord.php';
+namespace System;
 
 /**
  * 
@@ -49,26 +43,39 @@ class Application
 
     public function __construct()
     {
-        date_default_timezone_set('America/Sao_Paulo');
+        if (!defined('PHP_VERSION_ID') || PHP_VERSION_ID < 50300)
+            die('PHP MVC Framework requires PHP 5.3 or higher');
         
+        define("MVC_SYSTEM_PATH", dirname(__FILE__) . DIRECTORY_SEPARATOR);
+        define("MVC_ROOT_PATH", dirname($_SERVER["SCRIPT_FILENAME"]) . DIRECTORY_SEPARATOR);
+
+        if (!defined('MVC_FRIENDLY_URL'))
+            define("MVC_FRIENDLY_URL", true);
+
+        require_once MVC_SYSTEM_PATH . 'Vendor/smarty/Smarty.class.php';
+        require_once MVC_SYSTEM_PATH . 'Vendor/phpmailer/class.phpmailer.php';
+        require_once MVC_SYSTEM_PATH . 'Vendor/php-activerecord/ActiveRecord.php';
+
+        date_default_timezone_set('America/Sao_Paulo');
+
         $this->_config = simplexml_load_file(MVC_ROOT_PATH . "config.xml");
         $this->_namespace = $namespace = (string) $this->_config->application["namespace"];
 
         spl_autoload_register(function($class) use($namespace)
-                {
-                    if (substr($class, 0, strlen($namespace)) == $namespace)
-                    {
-                        $path = str_replace($namespace . "\\", "", $class);
-                        @include_once MVC_ROOT_PATH . str_replace("\\", DIRECTORY_SEPARATOR, $path) . ".php";
-                    }
-                    if (substr($class, 0, 6) == "System")
-                    {
-                        $path = str_replace("System\\", "", $class);
-                        @include_once MVC_SYSTEM_PATH . str_replace("\\", DIRECTORY_SEPARATOR, $path) . ".php";
-                    }
-                    spl_autoload_extensions(".php,.class.php,.inc.php");
-                    spl_autoload($class);
-                });
+        {
+            if (substr($class, 0, strlen($namespace)) == $namespace)
+            {
+                $path = str_replace($namespace . "\\", "", $class);
+                @include_once MVC_ROOT_PATH . str_replace("\\", DIRECTORY_SEPARATOR, $path) . ".php";
+            }
+            if (substr($class, 0, 6) == "System")
+            {
+                $path = str_replace("System\\", "", $class);
+                @include_once MVC_SYSTEM_PATH . str_replace("\\", DIRECTORY_SEPARATOR, $path) . ".php";
+            }
+            spl_autoload_extensions(".php,.class.php,.inc.php");
+            spl_autoload($class);
+        });
     }
 
     private function ParseRequest(\ReflectionClass $reflector, $requestPrefix)
@@ -122,8 +129,7 @@ class Application
                 else
                     $args->Add($parameter->getName(), isset($_REQUEST[$parameter->name]) ? $_REQUEST[$parameter->name] : null);
             }
-        }
-        catch (\ReflectionException $ex)
+        } catch (\ReflectionException $ex)
         {
             
         }
@@ -132,11 +138,11 @@ class Application
 
     public function Start()
     {
-        
+
         session_save_path(MVC_SYSTEM_PATH . 'Runtime');
         ini_set('session.gc_probability', 1);
         session_start();
-        
+
         Security\Authentication::Renew();
 
         $ok = false;
@@ -150,8 +156,7 @@ class Application
                 $global = new $globalClass();
                 $global->Start();
             }
-        }
-        catch (\Exception $ex)
+        } catch (\Exception $ex)
         {
             $this->RenderExceptionError($ex);
         }
@@ -185,8 +190,7 @@ class Application
                     elseif (array_key_exists($key, $defaults))
                     {
                         $params[$key] = $defaults[$key];
-                    }
-                    else
+                    } else
                     {
                         break;
                     }
@@ -250,38 +254,36 @@ class Application
                     try
                     {
                         $actionResult = call_user_func_array(array($controller, $this->_actionName), array_values($args->getArrayCopy()));
-                    }
-                    catch (\Exception $ex)
+                    } catch (\Exception $ex)
                     {
                         $resultEx = $ex;
                     }
                     //print_r($resultEx) ; exit();
-                    
+
                     $actionExecutedContext = new Mvc\ActionExecutedContext($this->_controllerContext, $actionDescriptor, false, $resultEx);
                     $actionExecutedContext->Result = $actionResult;
-                    
+
                     $this->_controllerContext->Controller->OnActionExecuted($actionExecutedContext);
-                    
+
                     if ($actionResult != null)
                     {
                         if ($actionResult instanceof Mvc\ActionResult)
                             $actionResult->ExecuteResult($this->_controllerContext);
-                        else echo $actionResult;
+                        else
+                            echo $actionResult;
                     }
-                    else if(isset($resultEx)) $this->RenderExceptionError($resultEx);
-                    
+                    else if (isset($resultEx))
+                        $this->RenderExceptionError($resultEx);
                 }
                 else
                 {
                     $this->RenderErrorPage();
                 }
-            }
-            catch (\Exception $ex)
+            } catch (\Exception $ex)
             {
                 $this->RenderExceptionError($ex);
             }
-        }
-        else
+        } else
         {
             $this->RenderErrorPage();
         }
@@ -316,5 +318,7 @@ class Application
     {
         echo "<pre>" . print_r($obj, true) . "</pre>";
     }
+
 }
+
 ?>

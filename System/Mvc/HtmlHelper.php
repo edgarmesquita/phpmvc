@@ -231,13 +231,7 @@ class HtmlHelper
         if (isset($optionLabel))
             $options .= $this->RenderElement("option", array("value" => ""), $optionLabel);
 
-        $value = null;
 
-        if (isset($this->_model))
-        {
-            $prop = preg_replace("/\[([a-zA-Z]+)\]/", "['$1']", $name);
-            eval("\$value = \$this->_model->$prop;");
-        }
 
         foreach ($selectList as $item)
         {
@@ -253,13 +247,9 @@ class HtmlHelper
                 $attrs["value"] = $item->Value;
                 $text = $item->Text;
 
-                if (isset($value) && $item->Value == $value)
-                    $attrs["selected"] = "selected";
-                else
-                {
                     if ($item->Selected)
                         $attrs["selected"] = "selected";
-                }
+                
             }
 
             $options .= $this->RenderElement("option", $attrs, $text);
@@ -269,12 +259,34 @@ class HtmlHelper
 
     /**
      * 
+     * @param string $property
+     * @param SelectList $selectList
+     * @param string $optionLabel
+     * @param array $htmlAttributes
+     */
+    public function DropDownListFor($property, $selectList, $optionLabel = null, $htmlAttributes = array())
+    {
+        $value = null;
+
+        if (isset($this->_model))
+        {
+            $prop = preg_replace("/\[([a-zA-Z]+)\]/", "['$1']", $property);
+            eval("\$value = \$this->_model->$prop;");
+        }
+        
+        return $this->DropDownList($property,
+                new SelectList($selectList, "Value", "Text", $value),
+                $optionLabel,
+                array_merge($htmlAttributes, $this->GetDataAnnotationValidationAttributes($property)));
+    }
+    /**
+     * 
      * @param string $name
      * @return string
      */
     public function ValidationMessage($name)
     {
-        return $this->RenderElement("spam", array(
+        return $this->RenderElement("span", array(
                     "class" => "field-validation-valid",
                     "data-valmsg-replace" => "true",
                     "data-valmsg-for" => $name
@@ -491,8 +503,10 @@ class HtmlHelper
                 $i++;
             }
         }
-        if ($innerHtml != null)
+        if ($innerHtml !== null)
+        {
             $element .= ">$innerHtml</$name>";
+        }
         else
         {
             if ($opened)

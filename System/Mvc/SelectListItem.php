@@ -41,5 +41,10 @@ class SelectListItem extends \System\Object
     {
         $this->_value = $value;
     }
+    
+    public function __construct($value = null, $text = null)
+    {
+        $this->_value = $value;
+        $this->_text = $text;
+    }
 }
-?>

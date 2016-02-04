@@ -29,20 +29,38 @@ class MultiSelectList extends \ArrayObject
             $item = new SelectListItem();
             if (isset($this->_dataTextField) && !empty($this->_dataTextField) && isset($this->_dataValueField) && !empty($this->_dataValueField))
             {
-                foreach ($this->_selectedValues as $selectedValue)
-                    if ($obj->{$this->_dataValueField} == $selectedValue)
-                        $item->SetSelected(true);
+                if($obj instanceof SelectListItem)
+                {
+                    foreach ($this->_selectedValues as $selectedValue)
+                        if ($obj->GetValue() == $selectedValue)
+                            $item->SetSelected(true);
 
-                $item->SetValue($obj->{$this->_dataValueField});
-                $item->SetText($obj->{$this->_dataTextField});
+                    $item->SetValue($obj->GetValue());
+                    $item->SetText($obj->GetText());
+                }
+                else
+                {
+                    foreach ($this->_selectedValues as $selectedValue)
+                        if ($obj->{$this->_dataValueField} == $selectedValue)
+                            $item->SetSelected(true);
+
+                    $item->SetValue($obj->{$this->_dataValueField});
+                    $item->SetText($obj->{$this->_dataTextField});
+                }
             }
             else
             {
-                foreach ($this->_selectedValues as $selectedValue)
-                    if ($index == $selectedValue) $item->SetSelected(true);
+                $value = null;
+                if($obj instanceof SelectListItem)
+                    $value = $obj->GetValue();
+                else $value = (string) $obj;
+                
+                if(count($this->_selectedValues) > 0)
+                    foreach ($this->_selectedValues as $selectedValue)
+                        if ($value == $selectedValue) $item->SetSelected(true);
                     
-                $item->SetValue($index);
-                $item->SetText((string) $obj);
+                $item->SetValue($value);
+                $item->SetText($value);
             }
             array_push($selectedItems, $item);
         }
