@@ -3,9 +3,9 @@ PHP MVC Framework
 
 PHP MVC Framework
 
-##Instalação
+## Instalação
 
-###Estrutura de pastas
+### Estrutura de pastas
 
 * ![](https://cdn1.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/16x16/folder.png) Areas **_(opcional)_**
   - ![](https://cdn1.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/16x16/folder.png) Exemplo **_(nome da área)_**
@@ -21,7 +21,7 @@ PHP MVC Framework
 * ![](https://cdn1.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/16x16/attibutes.png) index.php
 
 
-####MvcApplication.php
+#### MvcApplication.php
 
 ```php
 namespace ProjetoExemplo;
@@ -74,7 +74,7 @@ class MvcApplication extends \System\Web\HttpApplication
 }
 ```
 
-####config.xml
+#### config.xml
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -90,7 +90,7 @@ class MvcApplication extends \System\Web\HttpApplication
 </configuration>
 ```
 
-####index.php
+#### index.php
 
 ```php
 require_once 'System/Application.php';
@@ -98,7 +98,7 @@ $app = new \System\Application();
 $app->Start();
 ```
 
-###Exemplo de implementação do Controller
+### Exemplo de implementação do Controller
 
 ```php
 
@@ -157,7 +157,7 @@ class HomeController extends Controller
 
 ```
 
-###Exemplo de modelo
+### Exemplo de modelo
 ```php
 
 namespace ProjetoExemplo\Models;
@@ -211,7 +211,7 @@ class RegisterModel
 
 ```
 
-###Exemplo de implementação da View
+### Exemplo de implementação da View
 
 ```tpl
 
